@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ALJO Price Wizard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23e8590c'/%3E%3Ctext x='16' y='22' font-size='15' font-weight='700' text-anchor='middle' fill='white' font-family='sans-serif'%3EAL%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f3f5f8; --card:#ffffff; --ink:#14213d; --muted:#586376; --line:#dde2ea;
+  --brand:#e8590c; --brand-t:#b9470a; --btn:#b9470a; --btn-h:#963906;
+  --navy:#14213d; --on-navy:#ffffff; --warn:#8a5a00; --warn-bg:#fff4d6; --err:#9b1c1c; --err-bg:#fdecec;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0e1420; --card:#171f2e; --ink:#eef1f6; --muted:#9aa6b8; --line:#2a3447;
+    --brand-t:#ff8a4c; --navy:#0a0f19; --warn:#f1d27a; --warn-bg:#33290f; --err:#ffb4b4; --err-bg:#3a1b1b; color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--font)}
+.band{background:var(--navy);color:var(--on-navy);padding:18px max(16px,env(safe-area-inset-right,0px)) 18px max(16px,env(safe-area-inset-left,0px))}
+.band-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.logo{width:42px;height:42px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:18px;flex:none}
+.band h1{margin:0;font-size:20px;letter-spacing:.3px;text-wrap:balance}
+.band p{margin:0;font-size:13px;opacity:.78}
+.page{padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+main{max-width:1080px;margin:22px auto 8px;display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:20px;align-items:start}
+@media(max-width:860px){main{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;min-width:0}
+.card h2{margin:0 0 14px;font-size:13px;letter-spacing:1.2px;text-transform:uppercase;color:var(--brand-t)}
+label{display:block;font-size:13px;font-weight:600;margin:0 0 5px;color:var(--muted)}
+select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;min-width:0}
+select:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.field{margin-bottom:14px;min-width:0}
+.stop{display:flex;gap:8px;align-items:flex-end;margin-bottom:12px}
+.stop .field{flex:1;margin:0}
+.x{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;width:44px;height:44px;font-size:20px;cursor:pointer;flex:none}
+.x:hover{border-color:var(--brand);color:var(--brand-t)}
+.link{background:none;border:0;color:var(--brand-t);font:inherit;font-weight:700;cursor:pointer;padding:4px 0}
+.vehicle{display:flex;gap:12px;align-items:center;padding:12px 14px;border:2px solid var(--brand);border-radius:12px;background:var(--bg);margin-bottom:16px}
+.vehicle svg{flex:none;color:var(--brand-t)}
+.vehicle b{display:block}.vehicle span{font-size:13px;color:var(--muted)}
+.chk{display:flex;gap:10px;align-items:center;margin:6px 0 16px}
+.chk input{width:20px;height:20px;accent-color:var(--brand)}
+.chk label{margin:0;color:var(--ink);font-weight:500;font-size:15px}
+.go{width:100%;padding:14px;border:0;border-radius:12px;background:var(--btn);color:#fff;font:inherit;font-weight:800;font-size:17px;cursor:pointer}
+.go:hover{background:var(--btn-h)}
+.msg{padding:10px 12px;border-radius:10px;font-size:14px;margin:0 0 12px}
+.msg.note{background:var(--warn-bg);color:var(--warn)}
+.msg.err{background:var(--err-bg);color:var(--err)}
+.msg[hidden]{display:none}
+.total{background:var(--navy);color:var(--on-navy);border-radius:12px;padding:18px;margin-bottom:14px}
+.total small{display:block;opacity:.78;letter-spacing:1px;text-transform:uppercase;font-size:12px}
+.total .amt{font-size:40px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.total .meta{font-size:14px;opacity:.88;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:12px}
+td small{display:block;color:var(--muted);font-size:12px}
+tr.sum td{font-weight:700;border-top:2px solid var(--line);border-bottom:0}
+.legs{margin:16px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
+.legs li{padding:6px 0;border-top:1px solid var(--line)}
+.legs b{color:var(--ink);font-weight:600}
+.empty,.busy{color:var(--muted);text-align:center;padding:36px 10px}
+footer{max-width:1080px;margin:0 auto;padding:8px 0 28px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="band"><div class="band-in"><div class="logo" aria-hidden="true">AL</div><div><h1>ALJO Trucking Services</h1><p>Instant price quote &middot; Philippines truck rental</p></div></div></div>
+
+<div class="page">
+<main>
+  <section class="card" aria-label="Quote form">
+    <h2>Instant Price Quote</h2>
+    <div class="vehicle">
+      <svg width="44" height="30" viewBox="0 0 44 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="26" height="18" rx="2"/><path d="M27 8h9l7 7v6H27z"/><circle cx="9" cy="24" r="3.5" fill="var(--card)"/><circle cx="19" cy="24" r="3.5" fill="var(--card)"/><circle cx="36" cy="24" r="3.5" fill="var(--card)"/></svg>
+      <div><b>Foton 6-Wheeler Closed Van</b><span>Closed van truck &middot; 2026 rates</span></div>
+    </div>
+
+    <div class="field"><label for="from">Pickup</label><select id="from"></select></div>
+    <div id="mid"></div>
+    <div class="field"><label for="to">Destination</label><select id="to"></select></div>
+    <button class="link" id="addStop" type="button">+ Add another stop</button>
+
+    <div class="chk" style="margin-top:10px"><input type="checkbox" id="round"><label for="round">Include return trip back to pickup</label></div>
+
+    <button class="go" id="go" type="button">Get Price</button>
+  </section>
+
+  <section class="card" aria-label="Quote result" id="resultCard">
+    <h2>Your Quote</h2>
+    <div id="note" class="msg note" role="status" hidden></div>
+    <div id="result" aria-live="polite"></div>
+  </section>
+</main>
+<footer>Distances are road distances between town centers. Where a live road lookup is not available, an approximate distance is used and marked as such. The final price is confirmed by ALJO Trucking Services. Map data &copy; OpenStreetMap contributors.</footer>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ===== ALJO STAFF CONFIG: edit these numbers to change every quote =====
+     fuelPrice  pesos per liter        kmPerL    kilometers per liter
+     baseFee    pesos per booking      perKm     pesos per kilometer
+     driverFee  pesos per booking      roadFactor  used only for approximate distances
+     (1.5 on purpose: road distance around Laguna de Bay and the mountains is often well above a straight line,
+      and a low guess would under-quote) */
+  var CONFIG={fuelPrice:93,kmPerL:7,baseFee:2500,perKm:45,driverFee:800,roadFactor:1.5};
+
+  /* Distances ALJO checked on Google Maps. Use the exact city names from the lists below.
+     The order of the two cities does not matter. */
+  var SAVED_ROUTES=[
+    ['Calauan, Laguna','Dasmariñas, Cavite',65.4]
+  ];
+
+  var LIVE_TIMEOUT_MS=8000;
+  var OSRM='https://router.project-osrm.org/route/v1/driving/';
+
+  /* [name, latitude, longitude] grouped for the dropdowns. Coordinates are approximate town centers. */
+  var CITIES=[
+    ['Metro Manila',[['Manila',14.5995,120.9842],['Quezon City',14.6760,121.0437],['Makati',14.5547,121.0244],['Pasig',14.5764,121.0851],['Taguig',14.5176,121.0509],['Caloocan',14.6500,120.9667],['Parañaque',14.4793,121.0198],['Pasay',14.5378,121.0014],['Las Piñas',14.4445,120.9939],['Muntinlupa',14.4081,121.0415],['Valenzuela',14.7011,120.9830],['Marikina',14.6507,121.1029]]],
+    ['Luzon',[['Antipolo',14.5860,121.1760],['Bacoor, Cavite',14.4624,120.9645],['Dasmariñas, Cavite',14.3294,120.9367],['Lipa, Batangas',13.9411,121.1631],['Batangas City',13.7565,121.0583],['Lucena, Quezon',13.9373,121.6171],['Malolos, Bulacan',14.8433,120.8114],['Balanga, Bataan',14.6761,120.5360],['San Fernando, Pampanga',15.0286,120.6898],['Angeles, Pampanga',15.1450,120.5887],['Olongapo',14.8386,120.2842],['Tarlac City',15.4755,120.5963],['Cabanatuan',15.4860,120.9670],['Dagupan',16.0433,120.3333],['Baguio',16.4023,120.5960],['Laoag',18.1978,120.5936],['Tuguegarao',17.6132,121.7270],['Naga',13.6218,123.1948],['Legazpi',13.1391,123.7438]]],
+    ['Laguna',[['Alaminos, Laguna',14.0636,121.2461],['Bay, Laguna',14.1819,121.2842],['Biñan, Laguna',14.3333,121.0833],['Cabuyao, Laguna',14.2724,121.1251],['Calamba, Laguna',14.2117,121.1653],['Calauan, Laguna',14.1486,121.3153],['Cavinti, Laguna',14.2417,121.5081],['Famy, Laguna',14.4392,121.4472],['Kalayaan, Laguna',14.3258,121.5611],['Liliw, Laguna',14.1269,121.4358],['Los Baños, Laguna',14.1699,121.2437],['Luisiana, Laguna',14.1853,121.5108],['Lumban, Laguna',14.2986,121.4622],['Mabitac, Laguna',14.4286,121.4244],['Magdalena, Laguna',14.2000,121.4333],['Majayjay, Laguna',14.1469,121.4756],['Nagcarlan, Laguna',14.1364,121.4156],['Paete, Laguna',14.3647,121.4833],['Pagsanjan, Laguna',14.2736,121.4553],['Pakil, Laguna',14.3797,121.4764],['Pangil, Laguna',14.4022,121.4658],['Pila, Laguna',14.2333,121.3667],['Rizal, Laguna',14.1108,121.3947],['San Pablo, Laguna',14.0683,121.3256],['San Pedro, Laguna',14.3595,121.0473],['Santa Cruz, Laguna',14.2781,121.4139],['Santa Maria, Laguna',14.4753,121.4272],['Santa Rosa, Laguna',14.3122,121.1114],['Siniloan, Laguna',14.4231,121.4511],['Victoria, Laguna',14.2250,121.3292]]],
+  ];
+
+  var $=function(i){return document.getElementById(i)};
+  var peso=function(n){return '₱'+n.toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2})};
+  var r2=function(n){return Math.round(n*100)/100};
+  var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+  var r1=function(n){return Math.round(n*10)/10};
+  var norm=function(s){return String(s).normalize('NFC')}; // so accents like ñ always match
+  var key=function(a,b){return [norm(a),norm(b)].sort().join('|')};
+
+  var FLAT=[],byName={};
+  var idx=function(n){return byName[norm(n)]};
+  var OPTS=CITIES.map(function(g){
+    return '<optgroup label="'+esc(g[0])+'">'+g[1].map(function(c){
+      var i=FLAT.push(c)-1;byName[norm(c[0])]=i;return '<option value="'+i+'">'+esc(c[0])+'</option>';
+    }).join('')+'</optgroup>';
+  }).join('');
+  var saved={};
+  SAVED_ROUTES.forEach(function(r){
+    if(idx(r[0])===undefined||idx(r[1])===undefined){console.warn('Saved route uses an unknown city name:',r);return}
+    saved[key(r[0],r[1])]=r[2];
+  });
+
+  $('from').innerHTML=OPTS;$('to').innerHTML=OPTS;
+  $('from').value=idx('Calauan, Laguna');$('to').value=idx('Dasmariñas, Cavite');
+
+  var extra=0;
+  $('addStop').addEventListener('click',function(){
+    extra++;
+    var row=document.createElement('div');row.className='stop';
+    row.innerHTML='<div class="field"><label for="st'+extra+'"></label><select id="st'+extra+'">'+OPTS+'</select></div><button type="button" class="x" aria-label="Remove stop">&times;</button>';
+    $('mid').appendChild(row);renumber();
+    var sel=row.querySelector('select');sel.value=idx('Manila');
+    sel.addEventListener('change',calc);
+    row.querySelector('button').addEventListener('click',function(){row.remove();renumber();$('addStop').focus();calc()});
+    sel.focus();calc();
+  });
+  function renumber(){[].forEach.call($('mid').querySelectorAll('.stop'),function(r,i){r.querySelector('label').textContent='Stop '+(i+1);r.querySelector('button').setAttribute('aria-label','Remove stop '+(i+1))})}
+
+  function hav(a,b){
+    var R=6371,t=Math.PI/180,dLat=(b[1]-a[1])*t,dLon=(b[2]-a[2])*t;
+    var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a[1]*t)*Math.cos(b[1]*t)*Math.sin(dLon/2)*Math.sin(dLon/2);
+    return 2*R*Math.asin(Math.sqrt(x));
+  }
+
+  /* ---- distance for one leg: saved Google distance, then live road lookup, then approximate ---- */
+  /* One shared answer per pair of places, used for both directions, so the same quote never changes
+     price between clicks. Real requests are spaced 1.1 s apart (free server fair use). After a server
+     or network failure, live lookups pause for 60 s instead of making the customer wait again. */
+  var livePromises={},liveDownUntil=0,lastNet=0;
+  function fetchKm(a,b){
+    var wait=Math.max(0,lastNet+1100-Date.now());
+    lastNet=Date.now()+wait;
+    return new Promise(function(done){setTimeout(done,wait)}).then(function(){
+      if(Date.now()<liveDownUntil)throw new Error('down');
+      var ctl=new AbortController(),timer=setTimeout(function(){ctl.abort()},LIVE_TIMEOUT_MS);
+      var url=OSRM+a[2]+','+a[1]+';'+b[2]+','+b[1]+'?overview=false';
+      return fetch(url,{signal:ctl.signal}).then(function(r){if(!r.ok)throw new Error('http');return r.json()}).then(function(j){
+        if(j.code!=='Ok'||!j.routes||!j.routes.length)throw new Error('noroute');
+        var km=j.routes[0].distance/1000,straight=hav(a,b);
+        if(!(km>=straight*0.95&&km<=straight*3))throw new Error('implausible'); // reject nonsense answers
+        return km;
+      }).then(function(v){clearTimeout(timer);return v},function(e){
+        clearTimeout(timer);
+        if(e.message!=='noroute'&&e.message!=='implausible')liveDownUntil=Date.now()+60000;
+        throw e;
+      });
+    });
+  }
+  function liveKm(a,b){
+    var k=key(a[0],b[0]);
+    if(livePromises[k])return livePromises[k];
+    var p=fetchKm(a,b);
+    livePromises[k]=p;
+    p.catch(function(){setTimeout(function(){if(livePromises[k]===p)delete livePromises[k]},60000)}); // forget failures after a minute
+    return p;
+  }
+  function est(a,b){return {a:a,b:b,km:r1(hav(a,b)*CONFIG.roadFactor),src:'estimate'}}
+  function leg(a,b){
+    if(a[0]===b[0])return Promise.resolve({a:a,b:b,km:0,src:'same'});
+    var s=saved[key(a[0],b[0])];
+    if(s!==undefined)return Promise.resolve({a:a,b:b,km:r1(s),src:'saved'});
+    return liveKm(a,b).then(function(km){return {a:a,b:b,km:r1(km),src:'live'}},function(){return est(a,b)});
+  }
+  var SRC={saved:'Google Maps distance',live:'Live road distance (OpenStreetMap)',estimate:'Approximate',same:'Same place'};
+
+  function points(){
+    return [$('from')].concat([].slice.call($('mid').querySelectorAll('select')),[$('to')]).map(function(s){return FLAT[+s.value]});
+  }
+  function show(id,msg){var e=$(id);e.hidden=!msg;e.textContent=msg||''}
+
+  var runId=0;
+  function calc(){
+    var id=++runId;
+    show('note','');
+    var fail=function(){if(id===runId)$('result').innerHTML='<div class="empty">Something went wrong. Please refresh the page and try again.</div>'};
+    try{
+      var pts=points(),seq=pts.slice();
+      if($('round').checked)seq.push(pts[0]);
+      $('result').innerHTML='<div class="busy">Calculating your price...</div>';
+      var jobs=[];for(var i=0;i<seq.length-1;i++)jobs.push(leg(seq[i],seq[i+1]));
+      Promise.all(jobs).then(function(legs){
+        if(id!==runId)return; // a newer request replaced this one
+        render(legs);
+      }).catch(fail);
+    }catch(e){fail()}
+  }
+
+  function render(legs){
+    var km=r1(legs.reduce(function(a,l){return a+l.km},0)); // every leg is already rounded to 0.1 km, so the shown km always add up
+    if(km<=0){
+      $('result').innerHTML='<div class="empty">Choose two different places to see a price.</div>';
+      return;
+    }
+    var lines=[
+      ['Fuel',km.toFixed(1)+' km ÷ '+CONFIG.kmPerL+' km/L × '+peso(CONFIG.fuelPrice),r2(km/CONFIG.kmPerL*CONFIG.fuelPrice)],
+      ['Base fee','',r2(CONFIG.baseFee)],
+      ['Distance charge',km.toFixed(1)+' km × '+peso(CONFIG.perKm),r2(km*CONFIG.perKm)],
+      ['Driver','',r2(CONFIG.driverFee)]
+    ];
+    var total=r2(lines.reduce(function(a,l){return a+l[2]},0));
+    var h='<div class="total"><small>Estimated price</small><div class="amt">'+peso(total)+'</div><div class="meta">'+km.toFixed(1)+' km total</div></div><table>';
+    lines.forEach(function(l){h+='<tr><td>'+esc(l[0])+(l[1]?'<small>'+esc(l[1])+'</small>':'')+'</td><td>'+peso(l[2])+'</td></tr>'});
+    h+='<tr class="sum"><td>Total</td><td>'+peso(total)+'</td></tr></table><ul class="legs">';
+    legs.filter(function(l){return l.src!=='same'}).forEach(function(l){
+      h+='<li><b>'+esc(l.a[0])+' → '+esc(l.b[0])+'</b><br>'+l.km.toFixed(1)+' km &middot; '+esc(SRC[l.src])+'</li>';
+    });
+    h+='</ul>';
+    $('result').innerHTML=h;
+    if(legs.some(function(l){return l.src==='estimate'}))show('note','At least one distance is approximate because the live road lookup was not available. ALJO will confirm the final distance and price.');
+  }
+
+  ['from','to','round'].forEach(function(i){$(i).addEventListener('change',calc)});
+  $('go').addEventListener('click',function(){
+    calc();
+    $('resultCard').scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+  });
+  calc();
+})();
+</script>
+</body>
+</html>
